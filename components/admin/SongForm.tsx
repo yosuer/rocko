@@ -30,11 +30,14 @@ export function SongForm({ song, initialData, onSuccess, onCancel }: SongFormPro
     artist:      song?.artist      ?? initialData?.artist      ?? '',
     youtube_url: song?.youtube_url ?? initialData?.youtube_url ?? '',
     genre:       song?.genre       ?? '',
-    duration:    song?.duration?.toString() ?? (initialData?.duration != null ? String(initialData.duration) : ''),
+    duration:       song?.duration?.toString() ?? (initialData?.duration != null ? String(initialData.duration) : ''),
+    lyrics:         song?.lyrics      ?? '',
+    lyrics_offset:   song?.lyrics_offset != null ? String(song.lyrics_offset) : '0',
   });
   const [loading, setLoading] = useState(false);
+  const [loadingLyrics, setLoadingLyrics] = useState(false);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
 
@@ -65,6 +68,8 @@ export function SongForm({ song, initialData, onSuccess, onCancel }: SongFormPro
       thumbnail: getThumbnailUrl(youtubeId),
       genre: form.genre || null,
       duration: form.duration ? parseInt(form.duration, 10) : null,
+      lyrics: form.lyrics.trim() || null,
+      lyrics_offset: parseInt(form.lyrics_offset, 10) || 0,
     };
 
     const url = song ? `/api/admin/songs/${song.id}` : '/api/admin/songs';
@@ -99,6 +104,40 @@ export function SongForm({ song, initialData, onSuccess, onCancel }: SongFormPro
     letterSpacing: '0.05em',
     fontFamily: 'var(--font-jetbrains)',
   };
+
+  async function handleFetchLyrics() {
+    if (!form.title.trim() || !form.artist.trim()) {
+      toast.error('Completa título y artista para buscar la letra');
+      return;
+    }
+    setLoadingLyrics(true);
+    try {
+      const params = new URLSearchParams({
+        track_name: form.title.trim(),
+        artist_name: form.artist.trim(),
+      });
+      if (form.duration) params.set('duration', form.duration);
+      const res = await fetch(`/api/lyrics/search?${params}`);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(data.error ?? 'No se encontraron letras');
+        return;
+      }
+      if (data.lyrics) {
+        setForm((prev) => ({
+          ...prev,
+          lyrics: data.lyrics,
+        }));
+        toast.success('Letra obtenida desde LRCLIB');
+      } else {
+        toast.error('No hay letra disponible');
+      }
+    } catch {
+      toast.error('Error al buscar la letra');
+    } finally {
+      setLoadingLyrics(false);
+    }
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -142,6 +181,47 @@ export function SongForm({ song, initialData, onSuccess, onCancel }: SongFormPro
             URL no reconocida como YouTube válida
           </p>
         )}
+      </div>
+
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <Label style={labelStyle}>Letra (formato LRC)</Label>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleFetchLyrics}
+            disabled={loadingLyrics || !form.title.trim() || !form.artist.trim()}
+            className="shrink-0 border-border text-muted-foreground"
+          >
+            {loadingLyrics ? 'Buscando…' : 'Obtener letra'}
+          </Button>
+        </div>
+        <textarea
+          name="lyrics"
+          value={form.lyrics}
+          onChange={handleChange}
+          placeholder={'[00:12.50] Primera línea\n[00:17.00] Segunda línea'}
+          rows={6}
+          className="w-full rounded-md border bg-background px-3 py-2 text-sm font-mono resize-y border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+        <p className="text-xs text-muted-foreground">
+          Formato LRC: [mm:ss.xx] seguido del texto. Usa «Obtener letra» para buscar en LRCLIB (gratis) o pega tu propio LRC.
+        </p>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Label style={labelStyle} className="shrink-0">Desplazamiento (seg)</Label>
+          <Input
+            name="lyrics_offset"
+            type="number"
+            value={form.lyrics_offset}
+            onChange={handleChange}
+            placeholder="0"
+            className="w-24 border-border bg-background text-foreground"
+          />
+          <span className="text-xs text-muted-foreground">
+            Si la letra se adelanta (ej. LRC con intro que tu vídeo no tiene), pon ej. 38 para retrasarla.
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

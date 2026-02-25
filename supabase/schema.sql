@@ -31,7 +31,9 @@ CREATE TABLE public.songs (
   thumbnail   TEXT,
   duration    INTEGER, -- segundos
   genre       TEXT,
-  plays_count INTEGER DEFAULT 0 NOT NULL,
+  lyrics       TEXT,   -- formato LRC: [mm:ss.xx] línea
+  lyrics_offset INTEGER DEFAULT 0 NOT NULL, -- segundos: positivo retrasa la letra
+  plays_count  INTEGER DEFAULT 0 NOT NULL,
   created_at  TIMESTAMPTZ DEFAULT NOW() NOT NULL,
   created_by  UUID REFERENCES public.users(id) ON DELETE SET NULL
 );

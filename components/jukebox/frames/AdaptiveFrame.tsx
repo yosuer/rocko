@@ -22,14 +22,14 @@ export function AdaptiveFrame({ theme, children }: AdaptiveFrameProps) {
   return (
     <div
       className={cn(
-        'w-full max-w-sm mx-auto',
+        'w-full max-w-xl mx-auto',
         isClassic && 'jukebox-frame rounded-3xl p-1',
         isNeon && 'rounded-2xl overflow-hidden border-2 border-primary/60 bg-card',
         isMinimal && 'rounded-2xl bg-card border border-border overflow-hidden',
         isVinyl && 'rounded-3xl overflow-hidden border-2 bg-card'
       )}
       style={{
-        minWidth: 280,
+        minWidth: 360,
         ...(isNeon && {
           boxShadow: '0 0 24px color-mix(in oklch, var(--primary) 30%, transparent), 0 0 48px color-mix(in oklch, var(--accent) 15%, transparent), inset 0 0 60px rgba(0,0,0,0.5)',
         }),
@@ -90,7 +90,7 @@ export function AdaptiveFrame({ theme, children }: AdaptiveFrameProps) {
       )}
 
       {/* Cuerpo: mismo nodo estable para children; paneles laterales solo en neon */}
-      <div className={cn('flex', isNeon && 'min-h-[320px]')}>
+      <div className={cn('flex', isNeon && 'min-h-[380px]')}>
         {isNeon && (
           <div
             className="w-12 shrink-0 flex flex-col items-center justify-center gap-1 py-4 border-r border-primary/30"

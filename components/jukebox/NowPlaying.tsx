@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import YouTube from 'react-youtube';
 import { SpinningDisc } from './SpinningDisc';
 import { PlayerControls } from './PlayerControls';
+import { LyricsDisplay } from './LyricsDisplay';
 import { useJukeboxStore } from '@/lib/store/jukeboxStore';
 import { useYouTube } from '@/lib/hooks/useYouTube';
 import { useQueue } from '@/lib/hooks/useQueue';
@@ -11,12 +12,21 @@ import { formatDuration } from '@/lib/utils/youtube';
 
 interface NowPlayingProps {
   isAdmin?: boolean;
+  isFullscreen?: boolean;
+  onToggleFullscreen?: () => void;
 }
 
-export function NowPlaying({ isAdmin = false }: NowPlayingProps) {
-  const { currentSong, isPlaying, queue, playerReady, setPlayerReady } = useJukeboxStore();
-  const { onReady, onStateChange, togglePlay, setVolume, loadVideo } = useYouTube();
-  const { advanceQueue } = useQueue();
+const LYRIC_POLL_INTERVAL_MS = 150;
+
+export function NowPlaying({
+  isAdmin = false,
+  isFullscreen = false,
+  onToggleFullscreen,
+}: NowPlayingProps) {
+  const { currentSong, isPlaying, playerReady, setPlayerReady, setCurrentTime, currentTime } =
+    useJukeboxStore();
+  const { onReady, onStateChange, togglePlay, setVolume, loadVideo, getCurrentTime } = useYouTube();
+  const { queue, advanceQueue } = useQueue();
 
   const hasPending = queue.length > 0;
   const videoId = currentSong?.song?.youtube_id ?? '';
@@ -33,14 +43,38 @@ export function NowPlaying({ isAdmin = false }: NowPlayingProps) {
     }
   }, [currentSong?.id, videoId, playerReady, loadVideo]);
 
+  // Actualizar currentTime para sincronizar letras (solo cuando está reproduciendo)
+  useEffect(() => {
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      setCurrentTime(getCurrentTime());
+    }, LYRIC_POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [isPlaying, setCurrentTime, getCurrentTime]);
+
   const thumbnail = currentSong?.song?.thumbnail ?? null;
   const title = currentSong?.song?.title ?? 'Sin canción';
   const artist = currentSong?.song?.artist ?? 'Selecciona una canción del catálogo';
   const duration = currentSong?.song?.duration ?? null;
   const requester = currentSong?.requester?.username ?? null;
 
+  const hasDuration = typeof duration === 'number' && duration > 0;
+  const clampedCurrent = Math.max(0, hasDuration ? Math.min(currentTime, duration!) : currentTime);
+  const progressPct = hasDuration && duration ? (clampedCurrent / duration) * 100 : 0;
+
   return (
     <div className="flex flex-col items-center gap-4 w-full">
+      {onToggleFullscreen && (
+        <div className="w-full flex justify-end px-2">
+          <button
+            type="button"
+            onClick={onToggleFullscreen}
+            className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/80 px-3 py-1 text-xs font-mono text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
+          >
+            {isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
+          </button>
+        </div>
+      )}
       {/* YouTube player oculto — solo montar con videoId válido para evitar playVideo sobre null en react-youtube */}
       {videoId && (
         <div
@@ -87,7 +121,7 @@ export function NowPlaying({ isAdmin = false }: NowPlayingProps) {
             boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
           }}
         />
-        <SpinningDisc thumbnail={thumbnail} isPlaying={isPlaying} size={220} />
+        <SpinningDisc thumbnail={thumbnail} isPlaying={isPlaying} size={280} />
       </div>
 
       {/* Info de la canción */}
@@ -107,14 +141,30 @@ export function NowPlaying({ isAdmin = false }: NowPlayingProps) {
         <p className="text-sm truncate text-primary">{artist}</p>
 
         <div className="flex items-center justify-center gap-3 text-xs font-mono text-muted-foreground">
-          {duration && <span>{formatDuration(duration)}</span>}
+          {hasDuration && <span>{formatDuration(duration!)}</span>}
           {requester && (
             <>
-              {duration && <span>·</span>}
+              {hasDuration && <span>·</span>}
               <span>por {requester}</span>
             </>
           )}
         </div>
+      </div>
+
+      {/* Progreso de la canción */}
+      <div className="w-full px-6">
+        <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground mb-1">
+          <span>{formatDuration(Math.floor(clampedCurrent))}</span>
+          {hasDuration && <span>{formatDuration(duration!)}</span>}
+        </div>
+        {hasDuration && (
+          <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+            <div
+              className="h-full bg-primary transition-all"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Botón de arranque cuando hay canciones pendientes pero nada reproduciendo */}
@@ -134,6 +184,15 @@ export function NowPlaying({ isAdmin = false }: NowPlayingProps) {
           onSkip={advanceQueue}
           onVolumeChange={setVolume}
           isAdmin={isAdmin}
+        />
+      </div>
+
+      {/* Letra sincronizada */}
+      <div className="w-full">
+        <LyricsDisplay
+          lyrics={currentSong?.song?.lyrics ?? null}
+          lyricsOffset={currentSong?.song?.lyrics_offset ?? 0}
+          songId={currentSong?.id ?? null}
         />
       </div>
     </div>

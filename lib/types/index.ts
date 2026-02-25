@@ -22,6 +22,9 @@ export interface Song {
   thumbnail: string | null;
   duration: number | null;
   genre: string | null;
+  lyrics: string | null;
+  /** Desplazamiento en segundos: positivo = retrasar letra (si se adelanta) */
+  lyrics_offset: number;
   plays_count: number;
   created_at: string;
   created_by: string | null;

@@ -45,5 +45,9 @@ export function useYouTube() {
     playerRef.current?.loadVideoById(videoId);
   }, []);
 
-  return { playerRef, onReady, onStateChange, togglePlay, setVolume, loadVideo };
+  const getCurrentTime = useCallback((): number => {
+    return playerRef.current?.getCurrentTime?.() ?? 0;
+  }, []);
+
+  return { playerRef, onReady, onStateChange, togglePlay, setVolume, loadVideo, getCurrentTime };
 }
