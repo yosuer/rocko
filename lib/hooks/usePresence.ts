@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import type { REALTIME_SUBSCRIBE_STATES } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import { useJukeboxStore } from '@/lib/store/jukeboxStore';
 import { useUserStore } from '@/lib/store/userStore';
@@ -22,7 +23,7 @@ export function usePresence() {
         const state = channel.presenceState();
         setConnectedUsers(Object.keys(state).length);
       })
-      .subscribe(async (status) => {
+      .subscribe(async (status: REALTIME_SUBSCRIBE_STATES) => {
         if (status === 'SUBSCRIBED') {
           await channel.track({
             user_id: user.id,

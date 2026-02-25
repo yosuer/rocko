@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { createClient } from '@/lib/supabase/client';
 import { useUserStore } from '@/lib/store/userStore';
 import type { User } from '@/lib/types';
+import type { AuthChangeEvent, Session, User as AuthUser } from '@supabase/supabase-js';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const { setUser } = useUserStore();
@@ -12,7 +13,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const supabase = createClient();
 
-    async function loadProfile(authUser: { id: string; email?: string; user_metadata?: Record<string, unknown> }) {
+    async function loadProfile(authUser: AuthUser) {
       const { data: profile } = await supabase
         .from('users')
         .select('*')
@@ -36,7 +37,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }
 
     // Carga inicial — getUser() es la fuente de verdad para la sesión activa
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(({ data: { user } }: { data: { user: AuthUser | null } }) => {
       if (user) loadProfile(user);
       else setUser(null);
     });
@@ -44,7 +45,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     // Escucha cambios posteriores (login, logout, token refresh)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
       if (event === 'SIGNED_OUT' || !session?.user) {
         setUser(null);
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
