@@ -24,6 +24,25 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'Rocko — Jukebox Digital',
   description: 'La rockola moderna para disfrutar música en tiempo real con amigos.',
+  manifest: '/manifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Rocko',
+  },
+  formatDetection: {
+    telephone: false,
+    email: false,
+  },
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+  themeColor: '#14100c',
 };
 
 export default function RootLayout({
