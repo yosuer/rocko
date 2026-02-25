@@ -19,20 +19,11 @@ export function QueueList() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div
-        className="px-4 py-3 flex items-center justify-between shrink-0"
-        style={{ borderBottom: '1px solid oklch(0.28 0.025 42)' }}
-      >
-        <h3
-          className="text-sm font-semibold uppercase tracking-wider"
-          style={{ fontFamily: 'var(--font-playfair)', color: 'oklch(0.82 0.13 88)' }}
-        >
+      <div className="px-4 py-3 flex items-center justify-between shrink-0 border-b border-border">
+        <h3 className="text-sm font-semibold uppercase tracking-wider font-display text-primary">
           Cola de reproducción
         </h3>
-        <span
-          className="text-xs font-mono"
-          style={{ color: 'oklch(0.55 0.025 60)' }}
-        >
+        <span className="text-xs font-mono text-muted-foreground">
           {allItems.length} {allItems.length === 1 ? 'canción' : 'canciones'}
         </span>
       </div>
@@ -53,18 +44,9 @@ export function QueueList() {
             ))
           ) : allItems.length === 0 ? (
             <div className="text-center py-12">
-              <div
-                className="text-4xl mb-3"
-                style={{ color: 'oklch(0.35 0.04 60)' }}
-              >
-                ♪
-              </div>
-              <p className="text-sm" style={{ color: 'oklch(0.50 0.025 60)' }}>
-                La cola está vacía
-              </p>
-              <p className="text-xs mt-1" style={{ color: 'oklch(0.40 0.020 60)' }}>
-                Agrega canciones del catálogo
-              </p>
+              <div className="text-4xl mb-3 text-muted-foreground">♪</div>
+              <p className="text-sm text-muted-foreground">La cola está vacía</p>
+              <p className="text-xs mt-1 text-muted-foreground/80">Agrega canciones del catálogo</p>
             </div>
           ) : (
             <AnimatePresence mode="popLayout">

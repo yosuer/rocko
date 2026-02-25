@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Inter, Playfair_Display, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
+
+const themeInitScript = `(function(){var t=localStorage.getItem('rocko-theme')||'classic';document.documentElement.setAttribute('data-theme',t);})();`;
 
 const inter = Inter({
   variable: '--font-inter',
@@ -54,8 +57,14 @@ export default function RootLayout({
     <html
       lang="es"
       className={`${inter.variable} ${playfair.variable} ${jetbrains.variable}`}
+      suppressHydrationWarning
     >
       <body className="antialiased min-h-screen">
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: themeInitScript }}
+        />
         <Providers>{children}</Providers>
       </body>
     </html>

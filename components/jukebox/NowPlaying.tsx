@@ -14,18 +14,24 @@ interface NowPlayingProps {
 }
 
 export function NowPlaying({ isAdmin = false }: NowPlayingProps) {
-  const { currentSong, isPlaying, volume, queue } = useJukeboxStore();
+  const { currentSong, isPlaying, queue, playerReady, setPlayerReady } = useJukeboxStore();
   const { onReady, onStateChange, togglePlay, setVolume, loadVideo } = useYouTube();
   const { advanceQueue } = useQueue();
 
   const hasPending = queue.length > 0;
+  const videoId = currentSong?.song?.youtube_id ?? '';
 
-  // Cargar nueva canción cuando cambia currentSong
+  // Si no hay canción, marcar reproductor como no listo (evita usar ref destruido)
   useEffect(() => {
-    if (currentSong?.song?.youtube_id) {
-      loadVideo(currentSong.song.youtube_id);
+    if (!videoId) setPlayerReady(false);
+  }, [videoId, setPlayerReady]);
+
+  // Cargar nueva canción cuando cambia currentSong y el reproductor ya está listo (evita playVideo sobre null)
+  useEffect(() => {
+    if (videoId && playerReady) {
+      loadVideo(videoId);
     }
-  }, [currentSong?.id, currentSong?.song?.youtube_id, loadVideo]);
+  }, [currentSong?.id, videoId, playerReady, loadVideo]);
 
   const thumbnail = currentSong?.song?.thumbnail ?? null;
   const title = currentSong?.song?.title ?? 'Sin canción';
@@ -35,47 +41,49 @@ export function NowPlaying({ isAdmin = false }: NowPlayingProps) {
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
-      {/* YouTube player oculto — mantiene posición fuera de pantalla */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '-9999px',
-          width: 1,
-          height: 1,
-          overflow: 'hidden',
-        }}
-        aria-hidden="true"
-      >
-        <YouTube
-          videoId={currentSong?.song?.youtube_id ?? ''}
-          opts={{
-            width: '1',
-            height: '1',
-            playerVars: {
-              autoplay: 1,
-              controls: 0,
-              disablekb: 1,
-              fs: 0,
-              iv_load_policy: 3,
-              modestbranding: 1,
-              rel: 0,
-            },
+      {/* YouTube player oculto — solo montar con videoId válido para evitar playVideo sobre null en react-youtube */}
+      {videoId && (
+        <div
+          style={{
+            position: 'absolute',
+            left: '-9999px',
+            width: 1,
+            height: 1,
+            overflow: 'hidden',
           }}
-          onReady={onReady}
-          onStateChange={onStateChange}
-          onEnd={advanceQueue}
-        />
-      </div>
+          aria-hidden="true"
+        >
+          <YouTube
+            key={videoId}
+            videoId={videoId}
+            opts={{
+              width: '1',
+              height: '1',
+              playerVars: {
+                autoplay: 1,
+                controls: 0,
+                disablekb: 1,
+                fs: 0,
+                iv_load_policy: 3,
+                modestbranding: 1,
+                rel: 0,
+              },
+            }}
+            onReady={onReady}
+            onStateChange={onStateChange}
+            onEnd={advanceQueue}
+          />
+        </div>
+      )}
 
       {/* Disco giratorio */}
       <div className="relative">
         {/* Efecto de plato de tocadiscos */}
         <div
-          className="absolute inset-0 rounded-full pointer-events-none"
+          className="absolute inset-0 rounded-full pointer-events-none border-2 border-primary/20"
           style={{
             margin: -12,
-            background: 'radial-gradient(circle, oklch(0.20 0.025 42) 0%, oklch(0.14 0.022 40) 100%)',
-            border: '2px solid oklch(0.71 0.145 85 / 0.2)',
+            background: 'radial-gradient(circle, var(--card) 0%, var(--background) 100%)',
             boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
           }}
         />
@@ -87,30 +95,16 @@ export function NowPlaying({ isAdmin = false }: NowPlayingProps) {
         <div className="flex items-center justify-center gap-2">
           {isPlaying && (
             <span
-              className="animate-pulse-gold rounded-full"
-              style={{
-                width: 8,
-                height: 8,
-                background: 'oklch(0.71 0.145 85)',
-                display: 'inline-block',
-                flexShrink: 0,
-              }}
+              className="animate-pulse-gold rounded-full bg-primary inline-block flex-shrink-0"
+              style={{ width: 8, height: 8 }}
             />
           )}
-          <h2
-            className="text-xl font-bold leading-tight truncate max-w-xs"
-            style={{ fontFamily: 'var(--font-playfair)', color: 'oklch(0.93 0.030 80)' }}
-          >
+          <h2 className="text-xl font-bold leading-tight truncate max-w-xs font-display text-foreground">
             {title}
           </h2>
         </div>
 
-        <p
-          className="text-sm truncate"
-          style={{ color: 'oklch(0.71 0.145 85)' }}
-        >
-          {artist}
-        </p>
+        <p className="text-sm truncate text-primary">{artist}</p>
 
         <div className="flex items-center justify-center gap-3 text-xs font-mono text-muted-foreground">
           {duration && <span>{formatDuration(duration)}</span>}
@@ -127,8 +121,7 @@ export function NowPlaying({ isAdmin = false }: NowPlayingProps) {
       {!currentSong && hasPending && (
         <button
           onClick={advanceQueue}
-          className="gold-button rounded-xl px-6 py-2.5 font-semibold text-sm border-none"
-          style={{ color: 'oklch(0.12 0.022 42)' }}
+          className="gold-button rounded-xl px-6 py-2.5 font-semibold text-sm border-none text-primary-foreground"
         >
           ▶ Iniciar cola
         </button>

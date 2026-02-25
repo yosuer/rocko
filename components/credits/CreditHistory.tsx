@@ -19,11 +19,11 @@ interface CreditHistoryProps {
   onClose: () => void;
 }
 
-const TYPE_LABELS: Record<Transaction['type'], { label: string; sign: string; color: string }> = {
-  purchase: { label: 'Compra', sign: '+', color: 'oklch(0.68 0.16 145)' },
-  spend:    { label: 'Gasto',  sign: '-', color: 'oklch(0.58 0.175 25)' },
-  admin_credit: { label: 'Recarga admin', sign: '+', color: 'oklch(0.71 0.145 85)' },
-  refund:   { label: 'Reembolso', sign: '+', color: 'oklch(0.68 0.16 145)' },
+const TYPE_LABELS: Record<Transaction['type'], { label: string; sign: string; colorClass: string }> = {
+  purchase: { label: 'Compra', sign: '+', colorClass: 'text-primary' },
+  spend: { label: 'Gasto', sign: '-', colorClass: 'text-accent' },
+  admin_credit: { label: 'Recarga admin', sign: '+', colorClass: 'text-primary' },
+  refund: { label: 'Reembolso', sign: '+', colorClass: 'text-primary' },
 };
 
 export function CreditHistory({ open, onClose }: CreditHistoryProps) {
@@ -35,17 +35,9 @@ export function CreditHistory({ open, onClose }: CreditHistoryProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent
-        className="max-w-sm"
-        style={{
-          background: 'oklch(0.16 0.028 42)',
-          border: '1px solid oklch(0.71 0.145 85 / 0.3)',
-        }}
-      >
+      <DialogContent className="max-w-sm bg-card border-border">
         <DialogHeader>
-          <DialogTitle style={{ fontFamily: 'var(--font-playfair)', color: 'oklch(0.82 0.13 88)' }}>
-            Historial de créditos
-          </DialogTitle>
+          <DialogTitle className="font-display text-primary">Historial de créditos</DialogTitle>
         </DialogHeader>
 
         <ScrollArea className="max-h-80 custom-scrollbar">
@@ -59,9 +51,7 @@ export function CreditHistory({ open, onClose }: CreditHistoryProps) {
               ))}
             </div>
           ) : transactions.length === 0 ? (
-            <p className="text-center py-8 text-sm" style={{ color: 'oklch(0.50 0.025 60)' }}>
-              Sin transacciones aún
-            </p>
+            <p className="text-center py-8 text-sm text-muted-foreground">Sin transacciones aún</p>
           ) : (
             <div className="space-y-1 p-1">
               {transactions.map((tx) => {
@@ -69,21 +59,15 @@ export function CreditHistory({ open, onClose }: CreditHistoryProps) {
                 return (
                   <div
                     key={tx.id}
-                    className="flex items-center justify-between py-2 px-2 rounded-lg"
-                    style={{ background: 'oklch(0.12 0.022 40)' }}
+                    className="flex items-center justify-between py-2 px-2 rounded-lg bg-background"
                   >
                     <div className="min-w-0">
-                      <p className="text-xs truncate" style={{ color: 'oklch(0.80 0.025 80)' }}>
-                        {tx.description ?? meta.label}
-                      </p>
-                      <p className="text-xs font-mono" style={{ color: 'oklch(0.50 0.025 60)' }}>
+                      <p className="text-xs truncate text-foreground">{tx.description ?? meta.label}</p>
+                      <p className="text-xs font-mono text-muted-foreground">
                         {format(new Date(tx.created_at), "d MMM, HH:mm", { locale: es })}
                       </p>
                     </div>
-                    <span
-                      className="text-sm font-bold font-mono tabular-nums ml-3 shrink-0"
-                      style={{ color: meta.color }}
-                    >
+                    <span className={`text-sm font-bold font-mono tabular-nums ml-3 shrink-0 ${meta.colorClass}`}>
                       {meta.sign}{Math.abs(tx.amount)}
                     </span>
                   </div>

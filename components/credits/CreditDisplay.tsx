@@ -17,24 +17,11 @@ export function CreditDisplay() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all"
-        style={{
-          background: 'oklch(0.18 0.025 42)',
-          border: '1px solid oklch(0.71 0.145 85 / 0.35)',
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.borderColor = 'oklch(0.71 0.145 85 / 0.6)';
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.borderColor = 'oklch(0.71 0.145 85 / 0.35)';
-        }}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all bg-card border border-border hover:border-primary/60"
         title={`${coinsLeft} canciones disponibles · ver historial`}
       >
         <span style={{ fontSize: 14 }}>🪙</span>
-        <span
-          className="text-sm font-bold font-mono tabular-nums"
-          style={{ color: 'oklch(0.82 0.13 88)' }}
-        >
+        <span className="text-sm font-bold font-mono tabular-nums text-primary">
           {user.credits}
         </span>
       </button>

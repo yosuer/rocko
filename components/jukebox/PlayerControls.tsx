@@ -24,14 +24,10 @@ export function PlayerControls({
     onVolumeChange(v);
   }
 
+  const iconFill = 'var(--primary-foreground)';
+
   return (
-    <div
-      className="metal-panel rounded-xl px-5 py-3 flex items-center gap-4"
-      style={{
-        border: '1px solid oklch(0.55 0.010 220 / 0.5)',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.5), 0 1px 0 oklch(0.85 0.008 220 / 0.3) inset',
-      }}
-    >
+    <div className="metal-panel rounded-xl px-5 py-3 flex items-center gap-4 border border-border shadow-lg">
       {/* Botón Play/Pause */}
       <button
         onClick={onTogglePlay}
@@ -41,12 +37,12 @@ export function PlayerControls({
         title={isPlaying ? 'Pausar' : 'Reproducir'}
       >
         {isPlaying ? (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="oklch(0.15 0.02 40)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill={iconFill}>
             <rect x="6" y="4" width="4" height="16" rx="1" />
             <rect x="14" y="4" width="4" height="16" rx="1" />
           </svg>
         ) : (
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="oklch(0.15 0.02 40)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill={iconFill}>
             <polygon points="5,3 19,12 5,21" />
           </svg>
         )}
@@ -60,17 +56,14 @@ export function PlayerControls({
         style={{ width: 40, height: 40 }}
         title={isAdmin ? 'Saltar canción (admin)' : 'Vota para saltar en la cola →'}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="oklch(0.15 0.02 40)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill={iconFill}>
           <polygon points="5,4 13,12 5,20" />
-          <line x1="19" y1="4" x2="19" y2="20" stroke="oklch(0.15 0.02 40)" strokeWidth="2" />
+          <line x1="19" y1="4" x2="19" y2="20" stroke={iconFill} strokeWidth="2" />
         </svg>
       </button>
 
       {/* Separador */}
-      <div
-        className="h-8 w-px"
-        style={{ background: 'oklch(0.45 0.010 220 / 0.6)' }}
-      />
+      <div className="h-8 w-px bg-border" />
 
       {/* Control de volumen */}
       <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -103,10 +96,7 @@ export function PlayerControls({
           className="flex-1"
         />
 
-        <span
-          className="text-xs font-mono shrink-0 tabular-nums"
-          style={{ color: 'oklch(0.71 0.145 85)', minWidth: 28, textAlign: 'right' }}
-        >
+        <span className="text-xs font-mono shrink-0 tabular-nums text-primary" style={{ minWidth: 28, textAlign: 'right' }}>
           {volume}%
         </span>
       </div>

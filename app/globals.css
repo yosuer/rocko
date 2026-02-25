@@ -91,6 +91,72 @@
   --ring:               oklch(0.71 0.145 85);
 }
 
+/* Tema Neón — Arcade / Bar 80s */
+[data-theme="neon"] {
+  --background:         oklch(0.08 0.01 270);
+  --foreground:         oklch(0.92 0.02 270);
+  --card:               oklch(0.12 0.02 270);
+  --card-foreground:    oklch(0.92 0.02 270);
+  --popover:            oklch(0.14 0.02 270);
+  --popover-foreground: oklch(0.92 0.02 270);
+  --primary:            oklch(0.75 0.15 195);
+  --primary-foreground: oklch(0.12 0.02 270);
+  --secondary:          oklch(0.18 0.04 330);
+  --secondary-foreground: oklch(0.92 0.02 270);
+  --muted:              oklch(0.20 0.03 270);
+  --muted-foreground:   oklch(0.65 0.08 270);
+  --accent:             oklch(0.65 0.22 330);
+  --accent-foreground:   oklch(0.98 0.02 330);
+  --destructive:        oklch(0.60 0.22 25);
+  --border:             oklch(0.28 0.06 195);
+  --input:              oklch(0.18 0.02 270);
+  --ring:               oklch(0.75 0.15 195);
+}
+
+/* Tema Minimal — Moderno / Limpio */
+[data-theme="minimal"] {
+  --background:         oklch(0.14 0.01 260);
+  --foreground:         oklch(0.92 0.01 260);
+  --card:               oklch(0.18 0.01 260);
+  --card-foreground:    oklch(0.92 0.01 260);
+  --popover:            oklch(0.20 0.01 260);
+  --popover-foreground: oklch(0.92 0.01 260);
+  --primary:            oklch(0.55 0.18 250);
+  --primary-foreground: oklch(0.98 0.01 250);
+  --secondary:          oklch(0.24 0.01 260);
+  --secondary-foreground: oklch(0.92 0.01 260);
+  --muted:              oklch(0.22 0.01 260);
+  --muted-foreground:   oklch(0.58 0.02 260);
+  --accent:             oklch(0.55 0.18 250);
+  --accent-foreground:  oklch(0.98 0.01 250);
+  --destructive:        oklch(0.55 0.18 25);
+  --border:             oklch(0.28 0.01 260);
+  --input:              oklch(0.22 0.01 260);
+  --ring:               oklch(0.55 0.18 250);
+}
+
+/* Tema Vinilo — Cálido / Sala de discos */
+[data-theme="vinyl"] {
+  --background:         oklch(0.18 0.03 55);
+  --foreground:         oklch(0.92 0.02 55);
+  --card:               oklch(0.25 0.02 75);
+  --card-foreground:    oklch(0.92 0.02 55);
+  --popover:            oklch(0.28 0.02 75);
+  --popover-foreground: oklch(0.92 0.02 55);
+  --primary:            oklch(0.72 0.12 75);
+  --primary-foreground: oklch(0.18 0.03 55);
+  --secondary:          oklch(0.35 0.04 55);
+  --secondary-foreground: oklch(0.92 0.02 55);
+  --muted:              oklch(0.30 0.03 75);
+  --muted-foreground:   oklch(0.55 0.03 60);
+  --accent:             oklch(0.55 0.12 40);
+  --accent-foreground:   oklch(0.98 0.02 55);
+  --destructive:        oklch(0.50 0.14 25);
+  --border:             oklch(0.38 0.04 55);
+  --input:              oklch(0.28 0.02 75);
+  --ring:               oklch(0.72 0.12 75);
+}
+
 /* ============================================================
    BASE STYLES
    ============================================================ */
@@ -192,34 +258,34 @@
       0 0 12px oklch(0.71 0.145 85 / 0.3);
   }
 
-  /* Brillo de neón dorado */
+  /* Brillo neón — usa primary del tema */
   .neon-gold {
     box-shadow:
-      0 0 8px  oklch(0.71 0.145 85 / 0.6),
-      0 0 16px oklch(0.71 0.145 85 / 0.35),
-      0 0 32px oklch(0.71 0.145 85 / 0.15);
+      0 0 8px  color-mix(in oklch, var(--primary) 60%, transparent),
+      0 0 16px color-mix(in oklch, var(--primary) 35%, transparent),
+      0 0 32px color-mix(in oklch, var(--primary) 15%, transparent);
   }
 
-  /* Brillo de neón rubí */
+  /* Brillo acento (ej. rubí en clásico) */
   .neon-ruby {
     box-shadow:
-      0 0 8px  oklch(0.48 0.175 25 / 0.7),
-      0 0 16px oklch(0.48 0.175 25 / 0.4),
-      0 0 32px oklch(0.48 0.175 25 / 0.15);
+      0 0 8px  color-mix(in oklch, var(--accent) 70%, transparent),
+      0 0 16px color-mix(in oklch, var(--accent) 40%, transparent),
+      0 0 32px color-mix(in oklch, var(--accent) 15%, transparent);
   }
 
-  /* Marco jukebox */
+  /* Marco jukebox — usa variables para respetar el tema */
   .jukebox-frame {
     background: linear-gradient(
       160deg,
-      oklch(0.20 0.030 44) 0%,
-      oklch(0.14 0.025 40) 50%,
-      oklch(0.18 0.028 42) 100%
+      var(--card) 0%,
+      var(--background) 50%,
+      var(--card) 100%
     );
-    border: 2px solid oklch(0.71 0.145 85 / 0.4);
+    border: 2px solid color-mix(in oklch, var(--primary) 40%, transparent);
     box-shadow:
-      0 0 0 1px oklch(0.71 0.145 85 / 0.15) inset,
-      0 0 40px oklch(0.71 0.145 85 / 0.08) inset,
+      0 0 0 1px color-mix(in oklch, var(--primary) 15%, transparent) inset,
+      0 0 40px color-mix(in oklch, var(--primary) 8%, transparent) inset,
       0 20px 60px oklch(0.05 0 0 / 0.8),
       0 4px 20px oklch(0.05 0 0 / 0.5);
   }
@@ -257,6 +323,36 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: oklch(0.55 0.10 82);
   }
+
+  /* Temas neon y minimal: sin madera/cromo; usar variables */
+  [data-theme="neon"] .wood-texture,
+  [data-theme="minimal"] .wood-texture {
+    background-image: none;
+    background: var(--card);
+  }
+  [data-theme="neon"] .jukebox-frame,
+  [data-theme="minimal"] .jukebox-frame {
+    background: var(--card);
+    border-color: var(--border);
+    box-shadow: 0 4px 20px oklch(0 0 0 / 0.3);
+  }
+  [data-theme="neon"] .gold-button,
+  [data-theme="neon"] .chrome-button,
+  [data-theme="minimal"] .gold-button,
+  [data-theme="minimal"] .chrome-button {
+    background: var(--primary);
+    box-shadow: 0 2px 8px oklch(0 0 0 / 0.25);
+  }
+  [data-theme="neon"] .gold-button:active,
+  [data-theme="neon"] .chrome-button:active,
+  [data-theme="minimal"] .gold-button:active,
+  [data-theme="minimal"] .chrome-button:active {
+    box-shadow: 0 1px 4px oklch(0 0 0 / 0.3);
+  }
+  [data-theme="minimal"] .neon-gold,
+  [data-theme="minimal"] .neon-ruby {
+    box-shadow: none;
+  }
 }
 
 /* ============================================================
@@ -264,8 +360,8 @@
    ============================================================ */
 
 @keyframes pulse-gold {
-  0%, 100% { box-shadow: 0 0 8px oklch(0.71 0.145 85 / 0.4); }
-  50%       { box-shadow: 0 0 20px oklch(0.71 0.145 85 / 0.8), 0 0 40px oklch(0.71 0.145 85 / 0.3); }
+  0%, 100% { box-shadow: 0 0 8px color-mix(in oklch, var(--primary) 40%, transparent); }
+  50%       { box-shadow: 0 0 20px color-mix(in oklch, var(--primary) 80%, transparent), 0 0 40px color-mix(in oklch, var(--primary) 30%, transparent); }
 }
 
 @keyframes slide-in-right {

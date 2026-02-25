@@ -36,7 +36,7 @@ export function SpinningDisc({ thumbnail, isPlaying, size = 220 }: SpinningDiscP
         className="absolute inset-0 rounded-full"
         style={{
           boxShadow: isPlaying
-            ? '0 0 40px oklch(0.71 0.145 85 / 0.35), 0 8px 32px rgba(0,0,0,0.6)'
+            ? '0 0 40px color-mix(in oklch, var(--primary) 35%, transparent), 0 8px 32px rgba(0,0,0,0.6)'
             : '0 8px 32px rgba(0,0,0,0.6)',
           transition: 'box-shadow 0.5s ease',
         }}
@@ -67,16 +67,13 @@ export function SpinningDisc({ thumbnail, isPlaying, size = 220 }: SpinningDiscP
                 unoptimized
               />
             ) : (
-              <div
-                className="w-full h-full flex items-center justify-center"
-                style={{ background: 'oklch(0.18 0.03 42)' }}
-              >
+              <div className="w-full h-full flex items-center justify-center bg-muted">
                 <svg
                   width={size * 0.2}
                   height={size * 0.2}
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="oklch(0.71 0.145 85)"
+                  stroke="var(--primary)"
                   strokeWidth="1.5"
                 >
                   <path d="M9 18V5l12-2v13" />
@@ -100,14 +97,13 @@ export function SpinningDisc({ thumbnail, isPlaying, size = 220 }: SpinningDiscP
 
       {/* Punto central (eje) */}
       <div
-        className="absolute rounded-full"
+        className="absolute rounded-full bg-secondary"
         style={{
           width: size * 0.05,
           height: size * 0.05,
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          background: 'oklch(0.75 0.012 220)',
           boxShadow: '0 0 4px rgba(0,0,0,0.8)',
           zIndex: 10,
         }}

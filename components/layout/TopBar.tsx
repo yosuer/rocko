@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { toast } from 'sonner';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +12,14 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { CreditDisplay } from '@/components/credits/CreditDisplay';
 import { useUserStore } from '@/lib/store/userStore';
 import { useJukeboxStore } from '@/lib/store/jukeboxStore';
+import { useThemeStore } from '@/lib/store/themeStore';
+import { THEMES, type ThemeId } from '@/lib/theme';
 import { createClient } from '@/lib/supabase/client';
 
 export function TopBar() {
   const { user } = useUserStore();
   const { connectedUsers } = useJukeboxStore();
+  const { theme, setTheme } = useThemeStore();
 
   async function handleLogout() {
     const supabase = createClient();
@@ -27,47 +29,49 @@ export function TopBar() {
 
   return (
     <header
-      className="h-14 flex items-center justify-between px-4 md:px-6 shrink-0"
-      style={{
-        background: 'oklch(0.14 0.025 42)',
-        borderBottom: '1px solid oklch(0.71 0.145 85 / 0.25)',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.4)',
-      }}
+      className="h-14 flex items-center justify-between px-4 md:px-6 shrink-0 bg-card border-b border-border"
+      style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.4)' }}
     >
       {/* Logo */}
       <Link href="/" className="flex items-center gap-2 group">
-        <div
-          className="w-7 h-7 rounded-full flex items-center justify-center"
-          style={{ background: 'oklch(0.71 0.145 85)' }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="oklch(0.12 0.022 42)">
+        <div className="w-7 h-7 rounded-full flex items-center justify-center bg-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--primary-foreground)">
             <circle cx="12" cy="12" r="10" />
             <circle cx="12" cy="12" r="3" />
           </svg>
         </div>
-        <span
-          className="text-xl font-bold tracking-tight hidden sm:block"
-          style={{
-            fontFamily: 'var(--font-playfair)',
-            background: 'linear-gradient(180deg, oklch(0.88 0.13 88) 0%, oklch(0.62 0.145 82) 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
-        >
+        <span className="text-xl font-bold tracking-tight hidden sm:block font-display text-primary">
           ROCKO
         </span>
       </Link>
 
-      {/* Centro — usuarios conectados */}
-      <div className="flex items-center gap-1.5">
-        <div
-          className="rounded-full"
-          style={{ width: 7, height: 7, background: 'oklch(0.68 0.16 145)', boxShadow: '0 0 6px oklch(0.68 0.16 145)' }}
-        />
-        <span className="text-xs font-mono" style={{ color: 'oklch(0.60 0.025 60)' }}>
-          {connectedUsers} {connectedUsers === 1 ? 'usuario' : 'usuarios'} online
-        </span>
+      {/* Centro — usuarios conectados + selector de tema */}
+      <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-1.5">
+          <div
+            className="rounded-full bg-primary"
+            style={{ width: 7, height: 7, boxShadow: '0 0 6px var(--primary)' }}
+          />
+          <span className="text-xs font-mono text-muted-foreground">
+            {connectedUsers} {connectedUsers === 1 ? 'usuario' : 'usuarios'} online
+          </span>
+        </div>
+        <select
+          value={theme}
+          onChange={(e) => setTheme(e.target.value as ThemeId)}
+          title="Look and feel de la rockola"
+          className="h-8 min-w-0 max-w-[130px] rounded-lg border border-border bg-card px-2.5 text-xs font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background appearance-none cursor-pointer bg-no-repeat pr-7"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+            backgroundPosition: 'right 0.5rem center',
+          }}
+        >
+          {THEMES.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Derecha — créditos + user menu */}
@@ -79,57 +83,40 @@ export function TopBar() {
             <DropdownMenuTrigger asChild>
               <button className="focus:outline-none">
                 <Avatar className="w-8 h-8">
-                  <AvatarFallback
-                    className="text-xs font-bold"
-                    style={{
-                      background: 'oklch(0.71 0.145 85)',
-                      color: 'oklch(0.12 0.022 42)',
-                    }}
-                  >
+                  <AvatarFallback className="text-xs font-bold bg-primary text-primary-foreground">
                     {user.username.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-              align="end"
-              style={{
-                background: 'oklch(0.18 0.028 42)',
-                border: '1px solid oklch(0.71 0.145 85 / 0.25)',
-              }}
-            >
+            <DropdownMenuContent align="end" className="bg-card border border-border">
               <div className="px-3 py-2">
-                <p className="text-sm font-semibold" style={{ color: 'oklch(0.90 0.025 80)' }}>
-                  {user.username}
-                </p>
-                <p className="text-xs" style={{ color: 'oklch(0.55 0.025 60)' }}>
-                  {user.email}
-                </p>
+                <p className="text-sm font-semibold text-foreground">{user.username}</p>
+                <p className="text-xs text-muted-foreground">{user.email}</p>
               </div>
 
-              <DropdownMenuSeparator style={{ background: 'oklch(0.28 0.025 42)' }} />
+              <DropdownMenuSeparator className="bg-muted" />
 
               {user.role === 'admin' && (
                 <>
                   <DropdownMenuItem asChild>
-                    <Link
-                      href="/admin"
-                      className="cursor-pointer"
-                      style={{ color: 'oklch(0.82 0.13 88)' }}
-                    >
+                    <Link href="/admin" className="cursor-pointer text-primary">
                       Panel de Admin
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator style={{ background: 'oklch(0.28 0.025 42)' }} />
+                  <DropdownMenuSeparator className="bg-muted" />
                 </>
               )}
 
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className="cursor-pointer"
-                style={{ color: 'oklch(0.65 0.175 25)' }}
-              >
+              <DropdownMenuItem asChild>
+                <Link href="/configuracion" className="cursor-pointer text-primary">
+                  Configuración
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-muted" />
+
+              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-accent">
                 Cerrar sesión
               </DropdownMenuItem>
             </DropdownMenuContent>

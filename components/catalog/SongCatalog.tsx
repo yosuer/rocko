@@ -59,26 +59,20 @@ export function SongCatalog() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div
-        className="px-4 pt-4 pb-3 shrink-0 space-y-3"
-        style={{ borderBottom: '1px solid oklch(0.28 0.025 42)' }}
-      >
-        <h3
-          className="text-sm font-semibold uppercase tracking-wider"
-          style={{ fontFamily: 'var(--font-playfair)', color: 'oklch(0.82 0.13 88)' }}
-        >
+      <div className="px-4 pt-4 pb-3 shrink-0 space-y-3 border-b border-border">
+        <h3 className="text-sm font-semibold uppercase tracking-wider font-display text-primary">
           Catálogo
         </h3>
 
         {/* Búsqueda */}
         <div className="relative">
           <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+            className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground"
             width="14"
             height="14"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="oklch(0.50 0.025 60)"
+            stroke="currentColor"
             strokeWidth="2"
           >
             <circle cx="11" cy="11" r="8" />
@@ -96,12 +90,7 @@ export function SongCatalog() {
         <div className="flex gap-1.5 flex-wrap">
           <button
             onClick={() => setActiveGenre('')}
-            className="text-xs px-2 py-0.5 rounded-full font-mono transition-all"
-            style={{
-              background: !activeGenre ? 'oklch(0.71 0.145 85)' : 'oklch(0.22 0.025 42)',
-              color: !activeGenre ? 'oklch(0.12 0.022 42)' : 'oklch(0.60 0.025 60)',
-              border: '1px solid transparent',
-            }}
+            className={`text-xs px-2 py-0.5 rounded-full font-mono transition-all border border-transparent ${!activeGenre ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}
           >
             Todos
           </button>
@@ -109,12 +98,7 @@ export function SongCatalog() {
             <button
               key={g}
               onClick={() => setActiveGenre(activeGenre === g ? '' : g)}
-              className="text-xs px-2 py-0.5 rounded-full font-mono transition-all"
-              style={{
-                background: activeGenre === g ? 'oklch(0.71 0.145 85)' : 'oklch(0.22 0.025 42)',
-                color: activeGenre === g ? 'oklch(0.12 0.022 42)' : 'oklch(0.60 0.025 60)',
-                border: '1px solid transparent',
-              }}
+              className={`text-xs px-2 py-0.5 rounded-full font-mono transition-all border border-transparent ${activeGenre === g ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}
             >
               {g}
             </button>
@@ -138,9 +122,7 @@ export function SongCatalog() {
             ))
           ) : songs.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-sm" style={{ color: 'oklch(0.50 0.025 60)' }}>
-                No se encontraron canciones
-              </p>
+              <p className="text-sm text-muted-foreground">No se encontraron canciones</p>
             </div>
           ) : (
             songs.map((song) => (

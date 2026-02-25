@@ -32,12 +32,7 @@ export function VoteButtons({ item, onVoted }: VoteButtonsProps) {
       <button
         onClick={() => handleVote('up')}
         disabled={isVoting(item.id, 'up')}
-        className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono transition-all disabled:opacity-50"
-        style={{
-          background: userVote.up ? 'oklch(0.71 0.145 85 / 0.2)' : 'transparent',
-          border: `1px solid ${userVote.up ? 'oklch(0.71 0.145 85 / 0.6)' : 'oklch(0.35 0.038 60 / 0.4)'}`,
-          color: userVote.up ? 'oklch(0.82 0.13 88)' : 'oklch(0.60 0.025 60)',
-        }}
+        className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono transition-all disabled:opacity-50 border ${userVote.up ? 'bg-primary/20 border-primary/60 text-primary' : 'bg-transparent border-border text-muted-foreground'}`}
         title="Subir en la cola"
       >
         <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
@@ -51,12 +46,7 @@ export function VoteButtons({ item, onVoted }: VoteButtonsProps) {
         <button
           onClick={() => handleVote('skip')}
           disabled={isVoting(item.id, 'skip')}
-          className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono transition-all disabled:opacity-50"
-          style={{
-            background: userVote.skip ? 'oklch(0.48 0.175 25 / 0.2)' : 'transparent',
-            border: `1px solid ${userVote.skip ? 'oklch(0.48 0.175 25 / 0.6)' : 'oklch(0.35 0.038 60 / 0.4)'}`,
-            color: userVote.skip ? 'oklch(0.65 0.175 25)' : 'oklch(0.60 0.025 60)',
-          }}
+          className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-mono transition-all disabled:opacity-50 border ${userVote.skip ? 'bg-accent/20 border-accent/60 text-accent' : 'bg-transparent border-border text-muted-foreground'}`}
           title="Votar para saltar"
         >
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

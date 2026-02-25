@@ -1,14 +1,27 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { Toaster } from '@/components/ui/sonner';
 import { createClient } from '@/lib/supabase/client';
 import { useUserStore } from '@/lib/store/userStore';
+import { useThemeStore } from '@/lib/store/themeStore';
 import type { User } from '@/lib/types';
 import type { AuthChangeEvent, Session, User as AuthUser } from '@supabase/supabase-js';
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const { setUser } = useUserStore();
+  const hydrate = useThemeStore((s) => s.hydrate);
+
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
+
+  // Reaplicar tema en cada navegación (el layout del servidor no incluye data-theme y lo sobrescribe)
+  useEffect(() => {
+    hydrate();
+  }, [pathname, hydrate]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -68,9 +81,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         theme="dark"
         toastOptions={{
           style: {
-            background: 'oklch(0.16 0.028 42)',
-            border: '1px solid oklch(0.71 0.145 85 / 0.4)',
-            color: 'oklch(0.93 0.030 80)',
+            background: 'var(--card)',
+            border: '1px solid var(--border)',
+            color: 'var(--foreground)',
           },
         }}
       />

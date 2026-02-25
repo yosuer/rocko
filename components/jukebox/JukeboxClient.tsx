@@ -23,41 +23,20 @@ export function JukeboxClient({ isAdmin }: JukeboxClientProps) {
       {/* Solo una rama en el DOM para evitar dos reproductores YouTube (duplicado de audio) */}
       {isDesktop ? (
         <div className="flex-1 overflow-hidden grid grid-cols-[360px_1fr_360px]">
-          <aside
-            className="flex flex-col overflow-hidden min-h-0"
-            style={{
-              borderRight: '1px solid oklch(0.25 0.025 42)',
-              background: 'oklch(0.12 0.022 40 / 0.8)',
-            }}
-          >
+          <aside className="flex flex-col overflow-hidden min-h-0 border-r border-border bg-card/80">
             <SongCatalog />
           </aside>
-          <main
-            className="flex flex-col items-center justify-center p-6 overflow-y-auto"
-            style={{ background: 'oklch(0.10 0.018 40 / 0.6)' }}
-          >
+          <main className="flex flex-col items-center justify-center p-6 overflow-y-auto bg-background/60">
             <JukeboxFrame isAdmin={isAdmin} />
           </main>
-          <aside
-            className="flex flex-col overflow-hidden min-h-0"
-            style={{
-              borderLeft: '1px solid oklch(0.25 0.025 42)',
-              background: 'oklch(0.12 0.022 40 / 0.8)',
-            }}
-          >
+          <aside className="flex flex-col overflow-hidden min-h-0 border-l border-border bg-card/80">
             <QueueList />
           </aside>
         </div>
       ) : (
         <div className="flex-1 overflow-hidden flex flex-col">
         <Tabs defaultValue="player" className="flex flex-col flex-1 overflow-hidden">
-          <TabsList
-            className="shrink-0 rounded-none border-b h-11 gap-0 p-0"
-            style={{
-              background: 'oklch(0.14 0.025 42)',
-              borderColor: 'oklch(0.25 0.025 42)',
-            }}
-          >
+          <TabsList className="shrink-0 rounded-none border-b border-border h-11 gap-0 p-0 bg-card">
             {[
               { value: 'catalog', label: '🎵 Catálogo' },
               { value: 'player',  label: '🎶 Rockola' },
@@ -66,11 +45,7 @@ export function JukeboxClient({ isAdmin }: JukeboxClientProps) {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="flex-1 h-full rounded-none text-xs font-mono data-[state=active]:border-b-2"
-                style={{
-                  borderBottomColor: 'oklch(0.71 0.145 85)',
-                  color: 'oklch(0.60 0.025 60)',
-                }}
+                className="flex-1 h-full rounded-none text-xs font-mono text-muted-foreground data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary"
               >
                 {tab.label}
               </TabsTrigger>
