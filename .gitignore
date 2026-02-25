@@ -1,41 +1,81 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# ============================================================
+# Rocko — .gitignore
+# ============================================================
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Dependencias
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
 
-# testing
-/coverage
+# Build de Next.js
+.next/
+out/
+build/
+dist/
 
-# next.js
-/.next/
-/out/
+# Variables de entorno — NUNCA commitear
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
 
-# production
-/build
+# Sí versionar el ejemplo de variables
+!.env.local.example
 
-# misc
-.DS_Store
-*.pem
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
-# debug
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 .pnpm-debug.log*
+*.log
 
-# env files (can opt-in for committing if needed)
-.env*
+# Sistema operativo
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# vercel
-.vercel
+# Editores e IDEs
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Caché
+.cache/
+.parcel-cache/
+.turbo/
+.vercel/
+.netlify/
+
+# Tests
+coverage/
+.nyc_output/
+/test-results/
+/playwright-report/
+
+# Supabase local (si se usa Supabase CLI)
+supabase/.temp/
+supabase/functions/.cache/
+
+# Miscelánea
+*.pem
+*.key
+.claude/

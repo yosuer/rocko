@@ -1,26 +1,283 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   ROCKO JUKEBOX — Sistema de diseño retro
+   ============================================================ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Mapeo de variables shadcn */
+  --color-background:              var(--background);
+  --color-foreground:              var(--foreground);
+  --color-card:                    var(--card);
+  --color-card-foreground:         var(--card-foreground);
+  --color-popover:                 var(--popover);
+  --color-popover-foreground:      var(--popover-foreground);
+  --color-primary:                 var(--primary);
+  --color-primary-foreground:      var(--primary-foreground);
+  --color-secondary:               var(--secondary);
+  --color-secondary-foreground:    var(--secondary-foreground);
+  --color-muted:                   var(--muted);
+  --color-muted-foreground:        var(--muted-foreground);
+  --color-accent:                  var(--accent);
+  --color-accent-foreground:       var(--accent-foreground);
+  --color-destructive:             var(--destructive);
+  --color-border:                  var(--border);
+  --color-input:                   var(--input);
+  --color-ring:                    var(--ring);
+  --radius-sm:   calc(var(--radius) - 4px);
+  --radius-md:   calc(var(--radius) - 2px);
+  --radius-lg:   var(--radius);
+  --radius-xl:   calc(var(--radius) + 4px);
+
+  /* Fuentes jukebox */
+  --font-sans:   var(--font-inter);
+  --font-mono:   var(--font-jetbrains);
+  --font-display: var(--font-playfair);
+
+  /* Colores jukebox personalizados */
+  --color-jukebox-wood:    oklch(0.16 0.030 42);
+  --color-jukebox-wood-light: oklch(0.22 0.028 42);
+  --color-jukebox-gold:    oklch(0.71 0.145 85);
+  --color-jukebox-gold-light: oklch(0.82 0.13 88);
+  --color-jukebox-chrome:  oklch(0.75 0.012 220);
+  --color-jukebox-ruby:    oklch(0.48 0.175 25);
+  --color-jukebox-ruby-light: oklch(0.58 0.18 25);
+  --color-jukebox-neon:    oklch(0.88 0.14 88);
+  --color-jukebox-panel:   oklch(0.13 0.022 40);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Paleta oscura jukebox (siempre dark-mode) */
+:root {
+  --radius: 0.5rem;
+
+  /* Fondo general — marrón muy oscuro */
+  --background:         oklch(0.10 0.022 40);
+  --foreground:         oklch(0.93 0.030 80);
+
+  /* Tarjetas — madera oscura */
+  --card:               oklch(0.16 0.028 42);
+  --card-foreground:    oklch(0.93 0.030 80);
+
+  /* Popovers */
+  --popover:            oklch(0.18 0.028 42);
+  --popover-foreground: oklch(0.93 0.030 80);
+
+  /* Primario — dorado */
+  --primary:            oklch(0.71 0.145 85);
+  --primary-foreground: oklch(0.12 0.022 42);
+
+  /* Secundario — cromo plateado */
+  --secondary:          oklch(0.28 0.018 220);
+  --secondary-foreground: oklch(0.93 0.012 220);
+
+  /* Muted */
+  --muted:              oklch(0.22 0.020 42);
+  --muted-foreground:   oklch(0.60 0.025 60);
+
+  /* Acento — rojo rubí */
+  --accent:             oklch(0.48 0.175 25);
+  --accent-foreground:  oklch(0.95 0.018 80);
+
+  /* Destructive */
+  --destructive:        oklch(0.48 0.175 25);
+
+  /* Bordes — dorado tenue */
+  --border:             oklch(0.32 0.038 60);
+  --input:              oklch(0.20 0.022 42);
+  --ring:               oklch(0.71 0.145 85);
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display), Georgia, serif;
+  }
+
+  code, .font-mono {
+    font-family: var(--font-mono), 'Courier New', monospace;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================================
+   JUKEBOX VISUAL UTILITIES
+   ============================================================ */
+
+@layer utilities {
+  /* Textura de madera */
+  .wood-texture {
+    background-image:
+      repeating-linear-gradient(
+        87deg,
+        oklch(0.16 0.035 42 / 0.6) 0px,
+        oklch(0.14 0.030 40 / 0.4) 1px,
+        transparent 1px,
+        transparent 18px
+      ),
+      repeating-linear-gradient(
+        93deg,
+        oklch(0.18 0.032 44 / 0.3) 0px,
+        transparent 1px,
+        transparent 24px
+      );
+  }
+
+  /* Panel metálico */
+  .metal-panel {
+    background: linear-gradient(
+      180deg,
+      oklch(0.72 0.010 220) 0%,
+      oklch(0.60 0.008 220) 35%,
+      oklch(0.48 0.010 220) 60%,
+      oklch(0.62 0.009 220) 100%
+    );
+  }
+
+  /* Botón cromado 3D */
+  .chrome-button {
+    background: linear-gradient(
+      180deg,
+      oklch(0.88 0.010 220) 0%,
+      oklch(0.72 0.010 220) 40%,
+      oklch(0.56 0.012 220) 60%,
+      oklch(0.76 0.010 220) 100%
+    );
+    box-shadow:
+      0 1px 0 oklch(0.95 0.008 220 / 0.8) inset,
+      0 -1px 0 oklch(0.30 0.010 220 / 0.6) inset,
+      0 3px 6px oklch(0.05 0 0 / 0.5),
+      0 1px 2px oklch(0.05 0 0 / 0.3);
+  }
+
+  .chrome-button:active {
+    box-shadow:
+      0 1px 0 oklch(0.30 0.010 220 / 0.6) inset,
+      0 -1px 0 oklch(0.95 0.008 220 / 0.8) inset,
+      0 1px 3px oklch(0.05 0 0 / 0.5);
+    transform: translateY(1px);
+  }
+
+  /* Botón dorado */
+  .gold-button {
+    background: linear-gradient(
+      180deg,
+      oklch(0.82 0.13 88) 0%,
+      oklch(0.71 0.145 85) 40%,
+      oklch(0.58 0.15 82) 60%,
+      oklch(0.74 0.14 86) 100%
+    );
+    box-shadow:
+      0 1px 0 oklch(0.90 0.12 90 / 0.8) inset,
+      0 -1px 0 oklch(0.35 0.08 80 / 0.6) inset,
+      0 3px 8px oklch(0.05 0 0 / 0.6),
+      0 0 12px oklch(0.71 0.145 85 / 0.3);
+  }
+
+  /* Brillo de neón dorado */
+  .neon-gold {
+    box-shadow:
+      0 0 8px  oklch(0.71 0.145 85 / 0.6),
+      0 0 16px oklch(0.71 0.145 85 / 0.35),
+      0 0 32px oklch(0.71 0.145 85 / 0.15);
+  }
+
+  /* Brillo de neón rubí */
+  .neon-ruby {
+    box-shadow:
+      0 0 8px  oklch(0.48 0.175 25 / 0.7),
+      0 0 16px oklch(0.48 0.175 25 / 0.4),
+      0 0 32px oklch(0.48 0.175 25 / 0.15);
+  }
+
+  /* Marco jukebox */
+  .jukebox-frame {
+    background: linear-gradient(
+      160deg,
+      oklch(0.20 0.030 44) 0%,
+      oklch(0.14 0.025 40) 50%,
+      oklch(0.18 0.028 42) 100%
+    );
+    border: 2px solid oklch(0.71 0.145 85 / 0.4);
+    box-shadow:
+      0 0 0 1px oklch(0.71 0.145 85 / 0.15) inset,
+      0 0 40px oklch(0.71 0.145 85 / 0.08) inset,
+      0 20px 60px oklch(0.05 0 0 / 0.8),
+      0 4px 20px oklch(0.05 0 0 / 0.5);
+  }
+
+  /* Disco de vinilo */
+  .vinyl-disc {
+    background: radial-gradient(
+      circle,
+      oklch(0.08 0 0) 0%,
+      oklch(0.08 0 0) 12%,
+      oklch(0.18 0 0) 14%,
+      oklch(0.10 0 0) 20%,
+      oklch(0.20 0 0) 22%,
+      oklch(0.10 0 0) 38%,
+      oklch(0.20 0 0) 40%,
+      oklch(0.10 0 0) 56%,
+      oklch(0.20 0 0) 58%,
+      oklch(0.10 0 0) 74%,
+      oklch(0.20 0 0) 76%,
+      oklch(0.12 0 0) 100%
+    );
+  }
+
+  /* Scrollbar personalizado */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: oklch(0.14 0.025 40);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: oklch(0.35 0.038 60);
+    border-radius: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.55 0.10 82);
+  }
+}
+
+/* ============================================================
+   ANIMACIONES
+   ============================================================ */
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 8px oklch(0.71 0.145 85 / 0.4); }
+  50%       { box-shadow: 0 0 20px oklch(0.71 0.145 85 / 0.8), 0 0 40px oklch(0.71 0.145 85 / 0.3); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s ease-in-out infinite;
 }
