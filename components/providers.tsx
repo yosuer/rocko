@@ -23,13 +23,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
       if (profile) {
         setUser(profile as User);
       } else {
-        const username =
+        const fromMetadata =
           (authUser.user_metadata?.username as string | undefined) ??
-          authUser.email?.split('@')[0] ??
-          'usuario';
+          (authUser.user_metadata?.full_name as string | undefined) ??
+          (authUser.user_metadata?.name as string | undefined);
+        const username = fromMetadata
+          ? fromMetadata.replace(/\s+/g, '_').toLowerCase().slice(0, 30) || authUser.email?.split('@')[0]
+          : authUser.email?.split('@')[0];
+        const finalUsername = (username && username.length >= 2) ? username : 'usuario';
         const { data: newProfile } = await supabase
           .from('users')
-          .insert({ id: authUser.id, email: authUser.email!, username, credits: 50, role: 'user' })
+          .insert({ id: authUser.id, email: authUser.email!, username: finalUsername, credits: 50, role: 'user' })
           .select()
           .single();
         if (newProfile) setUser(newProfile as User);
