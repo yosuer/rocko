@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SongForm } from '@/components/admin/SongForm';
+import { YouTubeSearch, type YouTubeSearchItem } from '@/components/admin/YouTubeSearch';
 import { formatDuration } from '@/lib/utils/youtube';
 import type { Song } from '@/lib/types';
 
@@ -14,6 +15,7 @@ export default function AdminSongsPage() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [editSong, setEditSong] = useState<Song | null>(null);
+  const [pendingYouTubeItem, setPendingYouTubeItem] = useState<YouTubeSearchItem | null>(null);
   const [showForm, setShowForm] = useState(false);
 
   const fetchSongs = useCallback(async () => {
@@ -43,13 +45,35 @@ export default function AdminSongsPage() {
 
   function handleNew() {
     setEditSong(null);
+    setPendingYouTubeItem(null);
+    setShowForm(true);
+  }
+
+  function handleSelectFromYouTube(item: YouTubeSearchItem) {
+    setEditSong(null);
+    setPendingYouTubeItem(item);
     setShowForm(true);
   }
 
   function handleFormSuccess() {
     setShowForm(false);
+    setPendingYouTubeItem(null);
     fetchSongs();
   }
+
+  function handleFormOpenChange(open: boolean) {
+    if (!open) setPendingYouTubeItem(null);
+    setShowForm(open);
+  }
+
+  const formInitialData = pendingYouTubeItem
+    ? {
+        title: pendingYouTubeItem.title,
+        artist: pendingYouTubeItem.channelTitle,
+        youtube_url: `https://www.youtube.com/watch?v=${pendingYouTubeItem.videoId}`,
+        duration: pendingYouTubeItem.duration,
+      }
+    : undefined;
 
   return (
     <div className="p-6 space-y-6">
@@ -73,6 +97,8 @@ export default function AdminSongsPage() {
           + Nueva canción
         </Button>
       </div>
+
+      <YouTubeSearch onSelectToAdd={handleSelectFromYouTube} />
 
       {/* Tabla */}
       <div
@@ -169,7 +195,7 @@ export default function AdminSongsPage() {
       </div>
 
       {/* Modal formulario */}
-      <Dialog open={showForm} onOpenChange={setShowForm}>
+      <Dialog open={showForm} onOpenChange={handleFormOpenChange}>
         <DialogContent
           style={{
             background: 'oklch(0.16 0.028 42)',
@@ -178,13 +204,15 @@ export default function AdminSongsPage() {
         >
           <DialogHeader>
             <DialogTitle style={{ fontFamily: 'var(--font-playfair)', color: 'oklch(0.82 0.13 88)' }}>
-              {editSong ? 'Editar canción' : 'Nueva canción'}
+              {editSong ? 'Editar canción' : pendingYouTubeItem ? 'Agregar canción (completa género)' : 'Nueva canción'}
             </DialogTitle>
           </DialogHeader>
           <SongForm
+            key={editSong?.id ?? formInitialData?.youtube_url ?? 'new'}
             song={editSong ?? undefined}
+            initialData={formInitialData}
             onSuccess={handleFormSuccess}
-            onCancel={() => setShowForm(false)}
+            onCancel={() => handleFormOpenChange(false)}
           />
         </DialogContent>
       </Dialog>

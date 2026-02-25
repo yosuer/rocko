@@ -8,19 +8,29 @@ import { Label } from '@/components/ui/label';
 import { extractYouTubeId, getThumbnailUrl } from '@/lib/utils/youtube';
 import type { Song } from '@/lib/types';
 
+/** Datos iniciales al agregar desde búsqueda de YouTube (permite rellenar género). */
+export interface SongFormInitialData {
+  title: string;
+  artist: string;
+  youtube_url: string;
+  duration: number | null;
+}
+
 interface SongFormProps {
   song?: Song;
+  /** Al agregar desde YouTube, pre-rellena título, artista, URL y duración. */
+  initialData?: SongFormInitialData;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-export function SongForm({ song, onSuccess, onCancel }: SongFormProps) {
+export function SongForm({ song, initialData, onSuccess, onCancel }: SongFormProps) {
   const [form, setForm] = useState({
-    title:       song?.title       ?? '',
-    artist:      song?.artist      ?? '',
-    youtube_url: song?.youtube_url ?? '',
+    title:       song?.title       ?? initialData?.title       ?? '',
+    artist:      song?.artist      ?? initialData?.artist      ?? '',
+    youtube_url: song?.youtube_url ?? initialData?.youtube_url ?? '',
     genre:       song?.genre       ?? '',
-    duration:    song?.duration?.toString() ?? '',
+    duration:    song?.duration?.toString() ?? (initialData?.duration != null ? String(initialData.duration) : ''),
   });
   const [loading, setLoading] = useState(false);
 

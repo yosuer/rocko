@@ -6,54 +6,50 @@ import { JukeboxFrame } from './JukeboxFrame';
 import { SongCatalog } from '@/components/catalog/SongCatalog';
 import { QueueList } from '@/components/queue/QueueList';
 import { usePresence } from '@/lib/hooks/usePresence';
+import { useIsDesktop } from '@/lib/hooks/useMediaQuery';
 
 interface JukeboxClientProps {
   isAdmin: boolean;
 }
 
 export function JukeboxClient({ isAdmin }: JukeboxClientProps) {
-  // Registra presencia del usuario en el canal
   usePresence();
+  const isDesktop = useIsDesktop();
 
   return (
     <div className="flex flex-col h-screen overflow-hidden wood-texture">
       <TopBar />
 
-      {/* Layout desktop: 3 columnas */}
-      <div className="flex-1 overflow-hidden hidden lg:grid lg:grid-cols-[320px_1fr_320px]">
-        {/* Panel izquierdo — Catálogo */}
-        <aside
-          className="flex flex-col overflow-hidden"
-          style={{
-            borderRight: '1px solid oklch(0.25 0.025 42)',
-            background: 'oklch(0.12 0.022 40 / 0.8)',
-          }}
-        >
-          <SongCatalog />
-        </aside>
-
-        {/* Panel central — Reproductor */}
-        <main
-          className="flex flex-col items-center justify-center p-6 overflow-y-auto"
-          style={{ background: 'oklch(0.10 0.018 40 / 0.6)' }}
-        >
-          <JukeboxFrame isAdmin={isAdmin} />
-        </main>
-
-        {/* Panel derecho — Cola */}
-        <aside
-          className="flex flex-col overflow-hidden"
-          style={{
-            borderLeft: '1px solid oklch(0.25 0.025 42)',
-            background: 'oklch(0.12 0.022 40 / 0.8)',
-          }}
-        >
-          <QueueList />
-        </aside>
-      </div>
-
-      {/* Layout tablet/móvil: tabs */}
-      <div className="flex-1 overflow-hidden lg:hidden flex flex-col">
+      {/* Solo una rama en el DOM para evitar dos reproductores YouTube (duplicado de audio) */}
+      {isDesktop ? (
+        <div className="flex-1 overflow-hidden grid grid-cols-[360px_1fr_360px]">
+          <aside
+            className="flex flex-col overflow-hidden min-h-0"
+            style={{
+              borderRight: '1px solid oklch(0.25 0.025 42)',
+              background: 'oklch(0.12 0.022 40 / 0.8)',
+            }}
+          >
+            <SongCatalog />
+          </aside>
+          <main
+            className="flex flex-col items-center justify-center p-6 overflow-y-auto"
+            style={{ background: 'oklch(0.10 0.018 40 / 0.6)' }}
+          >
+            <JukeboxFrame isAdmin={isAdmin} />
+          </main>
+          <aside
+            className="flex flex-col overflow-hidden min-h-0"
+            style={{
+              borderLeft: '1px solid oklch(0.25 0.025 42)',
+              background: 'oklch(0.12 0.022 40 / 0.8)',
+            }}
+          >
+            <QueueList />
+          </aside>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-hidden flex flex-col">
         <Tabs defaultValue="player" className="flex flex-col flex-1 overflow-hidden">
           <TabsList
             className="shrink-0 rounded-none border-b h-11 gap-0 p-0"
@@ -101,7 +97,8 @@ export function JukeboxClient({ isAdmin }: JukeboxClientProps) {
             </div>
           </TabsContent>
         </Tabs>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

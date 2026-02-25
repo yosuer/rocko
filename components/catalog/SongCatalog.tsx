@@ -8,15 +8,22 @@ import { SongCard } from './SongCard';
 import { AddToQueue } from './AddToQueue';
 import type { Song } from '@/lib/types';
 
-const GENRES = ['Rock', 'Pop', 'Hip-Hop', 'Soul', 'Funk Pop', 'Indie Rock', 'Alternative'];
-
 export function SongCatalog() {
   const [songs, setSongs] = useState<Song[]>([]);
+  const [genres, setGenres] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [activeGenre, setActiveGenre] = useState('');
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const fetchGenres = useCallback(async () => {
+    const res = await fetch('/api/songs/genres');
+    if (res.ok) {
+      const data = await res.json();
+      setGenres(Array.isArray(data) ? data : []);
+    }
+  }, []);
 
   const fetchSongs = useCallback(async () => {
     setLoading(true);
@@ -31,6 +38,13 @@ export function SongCatalog() {
     }
     setLoading(false);
   }, [search, activeGenre]);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      fetchGenres();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [fetchGenres]);
 
   useEffect(() => {
     const timer = setTimeout(fetchSongs, 300);
@@ -91,7 +105,7 @@ export function SongCatalog() {
           >
             Todos
           </button>
-          {GENRES.map((g) => (
+          {genres.map((g) => (
             <button
               key={g}
               onClick={() => setActiveGenre(activeGenre === g ? '' : g)}
@@ -108,9 +122,10 @@ export function SongCatalog() {
         </div>
       </div>
 
-      {/* Lista */}
-      <ScrollArea className="flex-1 custom-scrollbar">
-        <div className="p-2 space-y-1">
+      {/* Lista con scroll (min-h-0 permite que el flex hijo haga scroll) */}
+      <div className="flex-1 min-h-0 flex flex-col">
+        <ScrollArea className="flex-1 min-h-0 custom-scrollbar overflow-x-hidden">
+          <div className="p-2 space-y-1 min-w-0 w-full">
           {loading ? (
             Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="flex items-center gap-3 p-2">
@@ -132,8 +147,9 @@ export function SongCatalog() {
               <SongCard key={song.id} song={song} onSelect={handleSelect} />
             ))
           )}
-        </div>
-      </ScrollArea>
+          </div>
+        </ScrollArea>
+      </div>
 
       {/* Modal agregar a cola */}
       <AddToQueue
